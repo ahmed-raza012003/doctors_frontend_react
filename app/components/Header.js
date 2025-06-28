@@ -1,9 +1,13 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect,  useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { doctorsData } from "@/app/data/DoctorData";
 import { servicesData } from "@/app/data/ServicesData";
+
+// import { fetchCatData } from "@/app/data/CatData";
+// import { fetchServices } from "./fetchServices";
+// import { getServicesData } from "@/app/data/servicesData";
 
 const MAIN_LOGO = process.env.NEXT_PUBLIC_MAIN_LOGO || "/fallback_logo.png";
 
@@ -27,8 +31,16 @@ const getServiceNames = (services, count = null) => {
   return simplified;
 };
 
-const getServiceCategories = (data) => {
-  return Object.keys(data).map((key) => ({ name: key }));
+export const getServicesData = async () => {
+  const services = await fetchServices();
+  return services;
+};
+
+// const getServiceCategories = (data) => {
+//   return Object.keys(data).map((key) => ({ name: key }));
+// };
+const getServiceCategories = (catData) => {
+  return catData.map((item) => ({ name: item.name }));
 };
 
 const Header = () => {
@@ -42,9 +54,152 @@ const Header = () => {
 
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-  const doctors = useMemo(() => getRandomDoctors(doctorsData, 5), []);
-  const servicesList = getServiceNames(servicesData.dental, 6);
-  const categoriesList = getServiceCategories(servicesData);
+  // const doctors = useMemo(() => getRandomDoctors(doctorsData, 5), []);
+  // const servicesList = getServiceNames(servicesData.dental, 6);
+
+  const [doctors, setDoctors] = useState([]);
+  const [servicesList, setServicesList] = useState([]);
+
+  useEffect(() => {
+    // Randomize only on client to avoid hydration mismatch
+    const randomDoctors = getRandomDoctors(doctorsData, 5);
+    const randomServices = getServiceNames(servicesData.dental, 6);
+
+    setDoctors(randomDoctors);
+    setServicesList(randomServices);
+  }, []);
+
+
+  // const [categories, setCategories] = useState([]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await fetchCatData();
+  //     console.log("Fetched Categories:", data);
+  //     setCategories(data);
+  //   };
+  //   fetchData();
+  // }, []);
+
+
+  const getServiceCategoriesFromServicesData = (servicesObj) => {
+  return Object.keys(servicesObj).map((key) => ({
+    name: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize
+    slug: key,
+  }));
+};
+
+  // const categoriesList = getServiceCategories(categories);
+  const categoriesList = getServiceCategoriesFromServicesData(servicesData);
+
+  
+
+
+
+// "use client";
+// import React, { useState, useEffect } from "react";
+// import Image from "next/image";
+// import Link from "next/link";
+// import { doctorsData } from "@/app/data/DoctorData";
+// import { fetchCatData } from "@/app/data/CatData";
+// import { getServicesData } from "@/app/data/ServicesData";
+
+// const MAIN_LOGO = process.env.NEXT_PUBLIC_MAIN_LOGO || "/fallback_logo.png";
+
+// const getRandomDoctors = (list, count = 5) => {
+//   const shuffled = [...list].sort(() => 0.5 - Math.random());
+//   return shuffled.slice(0, Math.min(count, shuffled.length)).map((doctor) => ({
+//     name: doctor.name,
+//     slug: doctor.slug,
+//     specialty: doctor.specialties,
+//   }));
+// };
+
+// const getServiceNames = (services, count = null) => {
+//   const simplified = services.map((item) => ({ name: item.name }));
+//   if (count !== null) {
+//     const shuffled = [...simplified].sort(() => 0.5 - Math.random());
+//     return shuffled.slice(0, Math.min(count, simplified.length));
+//   }
+//   return simplified;
+// };
+
+// const getServiceCategories = (catData) => {
+//   return catData.map((item) => ({ name: item.name }));
+// };
+
+// const Header = () => {
+//   const [isHoveredDoctor, setIsHoveredDoctor] = useState(false);
+//   const [isHoveredServices, setIsHoveredServices] = useState(false);
+//   const [isHoveredCategories, setIsHoveredCategories] = useState(false);
+
+//   const [isDoctorMenuOpen, setIsDoctorMenuOpen] = useState(false);
+//   const [isServicesMenuOpen, setIsServicesMenuOpen] = useState(false);
+//   const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
+
+//   const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+//   const [doctors, setDoctors] = useState([]);
+
+
+
+//   const [groupedServices, setGroupedServices] = useState({});
+
+//   useEffect(() => {
+//     const fetchServices = async () => {
+//       const data = await getServicesData(); // { dental: [...], medical: [...] }
+//       console.log("Grouped Services:", data); // ✅ See all categories
+//       setGroupedServices(data);
+//     };
+
+//     fetchServices();
+//   }, []);
+
+  
+//   // const [servicesList, setServicesList] = useState([]);
+//   const [servicesList, setServicesList] = useState([]);
+
+//   useEffect(() => {
+//     const fetchServices = async () => {
+//       const serviceData = await getServicesData();
+
+//       // Combine services from all categories
+//       const allServices = Object.values(serviceData).flat();
+
+//       // Optional: get random services (up to 6)
+//       const serviceNames = getServiceNames(allServices, 6);
+//       setServicesList(serviceNames);
+//     };
+
+//     fetchServices();
+//   }, []);
+
+  
+//   const [categories, setCategories] = useState([]);
+
+//   useEffect(() => {
+//     setDoctors(getRandomDoctors(doctorsData, 5));
+//   }, []);
+
+//   useEffect(() => {
+//     const fetchServices = async () => {
+//       const serviceData = await getServicesData();
+//       const randomServices = getServiceNames(serviceData.dental || [], 6); // or "medical", "orthopedics", etc.
+//       setServicesList(randomServices);
+//     };
+
+//     fetchServices();
+//   }, []);
+
+//   useEffect(() => {
+//     const fetchCategories = async () => {
+//       const data = await fetchCatData();
+//       setCategories(data);
+//     };
+//     fetchCategories();
+//   }, []);
+
+//   const categoriesList = getServiceCategories(categories);
 
   return (
     <header className="px-8 py-4 rounded-b-xl shadow-md flex justify-center md:justify-between items-center bg-[var(--color-primary)] text-text relative">

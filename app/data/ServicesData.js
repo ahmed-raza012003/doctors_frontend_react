@@ -164,3 +164,37 @@ export const servicesData = {
     }
   ]
 };
+
+
+// app/data/fetchServices.js
+// import axios from "axios";
+
+// export const getServicesData = async () => {
+//   try {
+//     const res = await axios.get("http://infophd:8000/api/services");
+//     const services = res.data.data;
+
+//     // Group services by category name
+//     const grouped = {};
+
+//     services.forEach((service) => {
+//       const categoryName = service.category.name.toLowerCase();
+
+//       if (!grouped[categoryName]) {
+//         grouped[categoryName] = [];
+//       }
+
+//       grouped[categoryName].push({
+//         name: service.name,
+//         description: service.description,
+//         image: `http://infophd:8000${service.image}`,
+//       });
+//     });
+
+//     return grouped;
+//   } catch (err) {
+//     console.error("Error fetching services:", err);
+//     return {};
+//   }
+// };
+
